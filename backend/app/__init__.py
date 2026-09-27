@@ -1,0 +1,3 @@
+"""
+AEGISZ-Health Backend Application
+"""

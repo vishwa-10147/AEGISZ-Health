@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  hospital-a-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aegisz_hospital_a
+    ports:
+      - "5433:5432"
+    volumes:
+      - hospital_a_data:/var/lib/postgresql/data
+    networks:
+      - aegisz-network
+
+  hospital-b-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aegisz_hospital_b
+    ports:
+      - "5434:5432"
+    volumes:
+      - hospital_b_data:/var/lib/postgresql/data
+    networks:
+      - aegisz-network
+
+  control-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aegisz_control
+    ports:
+      - "5435:5432"
+    volumes:
+      - control_data:/var/lib/postgresql/data
+    networks:
+      - aegisz-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - HOSPITAL_A_DB_URL=postgresql://postgres:password@hospital-a-db:5432/aegisz_hospital_a
+      - HOSPITAL_B_DB_URL=postgresql://postgres:password@hospital-b-db:5432/aegisz_hospital_b
+      - CONTROL_DB_URL=postgresql://postgres:password@control-db:5432/aegisz_control
+      - DATABASE_URL=postgresql://postgres:password@control-db:5432/aegisz_control
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_EXPIRATION_MINUTES=${JWT_EXPIRATION_MINUTES}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - SECURE_EXECUTION_MODE=${SECURE_EXECUTION_MODE}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - hospital-a-db
+      - hospital-b-db
+      - control-db
+    networks:
+      - aegisz-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - VITE_API_URL=http://localhost:${BACKEND_PORT:-8000}
+    depends_on:
+      - backend
+    networks:
+      - aegisz-network
+
+volumes:
+  hospital_a_data:
+  hospital_b_data:
+  control_data:
+
+networks:
+  aegisz-network:
+    driver: bridge
