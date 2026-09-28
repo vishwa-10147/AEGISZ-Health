@@ -1,38 +1,70 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 
-export function PatientRecord() {
-  const { id } = useParams();
+const PatientRecord = () => {
+  const [search, setSearch] = useState('');
+  const [patient, setPatient] = useState<any>(null);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate fetching decrypted FHIR data
+    setPatient({
+      id: search || 'patient-A-001',
+      name: 'John Smith',
+      dob: '1980-01-01',
+      resources: [
+        { id: 'obs-1', type: 'Observation', detail: 'Blood Pressure: 120/80 mmHg' },
+        { id: 'med-1', type: 'MedicationRequest', detail: 'Lisinopril 10mg daily' }
+      ]
+    });
+  };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-        <div>
-          <h2 style={{ color: '#f8fafc', marginTop: 0, marginBottom: '0.5rem', fontSize: '1.875rem' }}>John Doe (ID: {id})</h2>
-          <div style={{ color: '#94a3b8', fontSize: '0.875rem' }}>DOB: 1980-05-15 | Gender: Male</div>
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <span style={{ padding: '0.5rem 0.75rem', background: '#059669', color: 'white', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>VERIFIED PQC SIG</span>
-          <span style={{ padding: '0.5rem 0.75rem', background: '#0284c7', color: 'white', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>PROVENANCE OK</span>
-        </div>
+    <div style={{ color: 'white', maxWidth: '1000px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '24px', marginBottom: '20px', fontWeight: 'bold' }}>Patient Records (EHR)</h2>
+      
+      <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', marginBottom: '20px' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '15px' }}>
+          <input 
+            type="text" 
+            placeholder="Search by Patient ID..." 
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: 1, padding: '12px', borderRadius: '4px', backgroundColor: '#374151', color: 'white', border: '1px solid #4B5563', boxSizing: 'border-box' }}
+          />
+          <button type="submit" style={{ padding: '12px 25px', backgroundColor: '#10B981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+            Lookup FHIR Record
+          </button>
+        </form>
       </div>
 
-      <div style={{ background: '#1e293b', borderRadius: '8px', border: '1px solid #334155', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '1.5rem', borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-          <button style={{ background: 'transparent', border: 'none', color: '#38bdf8', borderBottom: '2px solid #38bdf8', padding: '0.5rem 0', cursor: 'pointer', fontWeight: 'bold' }}>Encounters</button>
-          <button style={{ background: 'transparent', border: 'none', color: '#94a3b8', padding: '0.5rem 0', cursor: 'pointer', fontWeight: 'bold' }}>Observations</button>
-          <button style={{ background: 'transparent', border: 'none', color: '#94a3b8', padding: '0.5rem 0', cursor: 'pointer', fontWeight: 'bold' }}>Medications</button>
-          <button style={{ background: 'transparent', border: 'none', color: '#94a3b8', padding: '0.5rem 0', cursor: 'pointer', fontWeight: 'bold' }}>Diagnostics</button>
-          <button style={{ background: 'transparent', border: 'none', color: '#94a3b8', padding: '0.5rem 0', cursor: 'pointer', fontWeight: 'bold' }}>Documents</button>
-        </div>
-        <div style={{ color: '#cbd5e1' }}>
-          <div style={{ padding: '1.5rem', background: '#0f172a', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #334155' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#f8fafc', fontSize: '1.125rem' }}>Encounter - General Checkup</h4>
-            <div style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '1rem' }}>Date: 2026-09-20 | Provider: Dr. Smith, City Medical Center</div>
-            <p style={{ margin: 0, lineHeight: '1.5' }}>Patient presents with mild hypertension. Recommended lifestyle changes including dietary modifications and increased exercise.</p>
+      {patient && (
+        <div style={{ backgroundColor: '#1F2937', padding: '25px', borderRadius: '8px', border: '1px solid #374151', animation: 'fadeIn 0.5s ease-in-out' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #374151', paddingBottom: '20px', marginBottom: '20px' }}>
+            <div>
+              <h3 style={{ fontSize: '22px', margin: '0 0 5px 0' }}>{patient.name}</h3>
+              <p style={{ margin: 0, color: '#9CA3AF' }}>ID: {patient.id} &nbsp;|&nbsp; DOB: {patient.dob}</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ backgroundColor: '#064E3B', color: '#34D399', padding: '6px 12px', borderRadius: '20px', fontSize: '13px', fontWeight: 'bold' }}>
+                🛡️ Decrypted via ML-KEM
+              </span>
+            </div>
+          </div>
+
+          <h4 style={{ marginBottom: '15px', color: '#E5E7EB', fontSize: '18px' }}>Clinical Resources</h4>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {patient.resources.map((r: any) => (
+              <div key={r.id} style={{ backgroundColor: '#111827', padding: '15px', borderRadius: '6px', borderLeft: '4px solid #3B82F6' }}>
+                <strong style={{ color: '#60A5FA', marginRight: '10px' }}>[{r.type}]</strong> 
+                <span>{r.detail}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
-}
+};
+
+export default PatientRecord;
