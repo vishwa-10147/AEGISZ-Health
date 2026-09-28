@@ -1,37 +1,35 @@
-"""
-PQC Crypto tests.
-Ensures the security of data in transit and at rest using quantum-safe algorithms.
-"""
+from app.crypto.envelope import PQCEnvelopeService
 import pytest
 
-def test_encrypt_decrypt_roundtrip():
-    """Verifies that data can be encrypted and successfully decrypted back to original."""
-    pytest.skip("Not yet implemented")
+def test_pqc_envelope_creation_and_opening():
+    service = PQCEnvelopeService()
+    payload = {"patient": "test-data", "status": "active", "resourceType": "Patient"}
+    
+    # Using simulated byte keys for the test
+    recipient_kem_pub = b"test_kem_pub"
+    recipient_kem_sec = b"test_kem_sec"
+    sender_dsa_pub = b"test_dsa_pub"
+    sender_dsa_sec = b"test_dsa_sec"
+    
+    # 1. Create Envelope
+    envelope = service.create_envelope(payload, recipient_kem_pub, sender_dsa_sec)
+    
+    assert "kem_ciphertext" in envelope
+    assert "payload_ciphertext" in envelope
+    assert "signature" in envelope
+    assert "nonce" in envelope
+    
+    # 2. Open Envelope
+    opened = service.open_envelope(envelope, recipient_kem_sec, sender_dsa_pub)
+    assert opened == payload
 
-def test_valid_signature_verification():
-    """Verifies that valid quantum-safe signatures are accepted."""
-    pytest.skip("Not yet implemented")
-
-def test_invalid_signature_detection():
-    """Verifies that forged or invalid signatures are rejected."""
-    pytest.skip("Not yet implemented")
-
-def test_modified_ciphertext_detection():
-    """Verifies that tampered ciphertexts fail decryption or validation."""
-    pytest.skip("Not yet implemented")
-
-def test_modified_payload_detection():
-    """Verifies that changes to the signed payload invalidate the signature."""
-    pytest.skip("Not yet implemented")
-
-def test_wrong_key_failure():
-    """Verifies that decryption fails when using the wrong private key."""
-    pytest.skip("Not yet implemented")
-
-def test_envelope_creation():
-    """Verifies the creation of a secure cryptographic envelope for transmission."""
-    pytest.skip("Not yet implemented")
-
-def test_envelope_verification():
-    """Verifies the parsing and validation of a secure cryptographic envelope."""
-    pytest.skip("Not yet implemented")
+def test_pqc_envelope_tamper_detection():
+    service = PQCEnvelopeService()
+    payload = {"secret": "data"}
+    envelope = service.create_envelope(payload, b"kem_pub", b"dsa_sec")
+    
+    # Tamper with the ciphertext
+    envelope["payload_ciphertext"] = "modified" + envelope["payload_ciphertext"][8:]
+    
+    with pytest.raises(ValueError, match="TAMPER DETECTED"):
+        service.open_envelope(envelope, b"kem_sec", b"dsa_pub")

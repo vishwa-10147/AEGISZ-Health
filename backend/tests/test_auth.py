@@ -1,25 +1,14 @@
-"""
-Authentication tests.
-Ensures that only properly authenticated entities can access the system.
-"""
-import pytest
+def test_login_requires_auth(client):
+    response = client.post(
+        "/token",
+        data={"username": "invalid_user", "password": "wrong_password"},
+        headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Incorrect username or password"
 
-def test_valid_token_accepted(test_app, auth_headers):
-    """Verifies that a valid JWT token allows access."""
-    pytest.skip("Not yet implemented")
-
-def test_invalid_token_rejected(test_app):
-    """Verifies that an invalid or malformed JWT token is rejected."""
-    pytest.skip("Not yet implemented")
-
-def test_expired_token_rejected(test_app):
-    """Verifies that an expired JWT token is rejected."""
-    pytest.skip("Not yet implemented")
-
-def test_missing_token_rejected(test_app):
-    """Verifies that requests without a token are rejected."""
-    pytest.skip("Not yet implemented")
-
-def test_malformed_token_rejected(test_app):
-    """Verifies that structurally invalid tokens are rejected."""
-    pytest.skip("Not yet implemented")
+def test_protected_health_endpoint(client):
+    response = client.get("/health")
+    # Health endpoint is public
+    assert response.status_code == 200
+    assert response.json()["status"] == "healthy"
