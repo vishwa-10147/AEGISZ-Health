@@ -1,20 +1,31 @@
-"""FHIR Models."""
 from pydantic import BaseModel
+from typing import List, Optional, Any, Dict
 
-class Patient(BaseModel):
+class FHIRResource(BaseModel):
+    resourceType: str
     id: str
 
-class Encounter(BaseModel):
-    id: str
+class Patient(FHIRResource):
+    resourceType: str = "Patient"
+    name: List[Dict[str, Any]] = []
+    gender: Optional[str] = None
+    birthDate: Optional[str] = None
 
-class Observation(BaseModel):
-    id: str
+class Observation(FHIRResource):
+    resourceType: str = "Observation"
+    status: str
+    code: Dict[str, Any]
+    subject: Dict[str, str]
+    valueQuantity: Optional[Dict[str, Any]] = None
 
-class MedicationRequest(BaseModel):
-    id: str
+class Encounter(FHIRResource):
+    resourceType: str = "Encounter"
+    status: str
+    subject: Dict[str, str]
 
-class DiagnosticReport(BaseModel):
-    id: str
-
-class DocumentReference(BaseModel):
-    id: str
+class MedicationRequest(FHIRResource):
+    resourceType: str = "MedicationRequest"
+    status: str
+    intent: str
+    medicationCodeableConcept: Dict[str, Any]
+    subject: Dict[str, str]

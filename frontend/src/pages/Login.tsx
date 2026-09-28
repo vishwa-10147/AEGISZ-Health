@@ -1,44 +1,95 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 
-export function Login() {
-  const [hospital, setHospital] = useState('');
-  const [role, setRole] = useState('Doctor');
+const Login = () => {
+  const [hospital, setHospital] = useState('hospital-A');
+  const [role, setRole] = useState('DOCTOR');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    login(username, password);
+    // Simulate login for now
+    console.log('Logging in...', { hospital, role, username });
+    localStorage.setItem('token', 'simulated_jwt_token');
     navigate('/');
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#020617' }}>
-      <form onSubmit={handleLogin} style={{ background: '#1e293b', padding: '2.5rem', borderRadius: '8px', width: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid #334155', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-        <h2 style={{ textAlign: 'center', color: '#38bdf8', margin: '0 0 1rem 0', fontSize: '1.875rem' }}>AEGISZ-Health</h2>
-        
-        <select value={hospital} onChange={e => setHospital(e.target.value)} style={{ padding: '0.75rem', borderRadius: '4px', background: '#0f172a', color: 'white', border: '1px solid #334155', outline: 'none' }} required>
-          <option value="">Select Hospital...</option>
-          <option value="HospA">General Hospital</option>
-          <option value="HospB">City Medical Center</option>
-        </select>
-        
-        <select value={role} onChange={e => setRole(e.target.value)} style={{ padding: '0.75rem', borderRadius: '4px', background: '#0f172a', color: 'white', border: '1px solid #334155', outline: 'none' }}>
-          <option value="Doctor">Doctor</option>
-          <option value="Admin">Admin</option>
-          <option value="Auditor">Auditor</option>
-        </select>
-        
-        <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} style={{ padding: '0.75rem', borderRadius: '4px', background: '#0f172a', color: 'white', border: '1px solid #334155', outline: 'none' }} required />
-        
-        <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} style={{ padding: '0.75rem', borderRadius: '4px', background: '#0f172a', color: 'white', border: '1px solid #334155', outline: 'none' }} required />
-        
-        <button type="submit" style={{ padding: '0.875rem', borderRadius: '4px', background: '#0284c7', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', marginTop: '0.5rem' }}>Secure Login</button>
-      </form>
+    <div style={{
+      backgroundColor: '#111827', minHeight: '100vh', display: 'flex', 
+      alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif'
+    }}>
+      <div style={{ 
+        backgroundColor: '#1F2937', padding: '40px', borderRadius: '8px', 
+        width: '100%', maxWidth: '400px', border: '1px solid #374151', color: 'white'
+      }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#10B981' }}>
+          AEGISZ-Health
+        </h2>
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Hospital</label>
+            <select 
+              value={hospital} 
+              onChange={(e) => setHospital(e.target.value)}
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', backgroundColor: '#374151', color: 'white', border: 'none' }}
+            >
+              <option value="hospital-A">Metro General Hospital (A)</option>
+              <option value="hospital-B">City Medical Center (B)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Role</label>
+            <select 
+              value={role} 
+              onChange={(e) => setRole(e.target.value)}
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', backgroundColor: '#374151', color: 'white', border: 'none' }}
+            >
+              <option value="DOCTOR">Doctor</option>
+              <option value="HOSPITAL_ADMIN">Hospital Admin</option>
+              <option value="AUDITOR">Auditor</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Username</label>
+            <input 
+              type="text" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', backgroundColor: '#374151', color: 'white', border: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Password</label>
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', backgroundColor: '#374151', color: 'white', border: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            style={{ 
+              marginTop: '10px', padding: '12px', backgroundColor: '#10B981', 
+              color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' 
+            }}
+          >
+            Secure Login
+          </button>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;

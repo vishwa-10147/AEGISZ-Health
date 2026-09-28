@@ -1,42 +1,30 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
-from functools import lru_cache
 
 class Settings(BaseSettings):
-    project_name: str = "AEGISZ-Health"
-    debug: bool = False
+    PROJECT_NAME: str = "AEGISZ-Health API"
+    VERSION: str = "0.1.0"
     
-    cors_origins: List[str] = ["http://localhost:3000"]
-
-    db_user: str = "postgres"
-    db_password: str = "postgres"
-    db_host: str = "localhost"
-    db_port: str = "5432"
+    HOSPITAL_A_DB_URL: str
+    HOSPITAL_B_DB_URL: str
+    CONTROL_DB_URL: str
+    DATABASE_URL: str
     
-    hospital_a_db: str = "aegisz_hospital_a"
-    hospital_b_db: str = "aegisz_hospital_b"
-    control_db: str = "aegisz_control"
-
-    secret_key: str = "supersecretkey"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
-
-    qkd_endpoint: str = "http://localhost:5000"
-
-    model_config = SettingsConfigDict(env_file=".env")
-
+    SECRET_KEY: str
+    JWT_SECRET: str
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_MINUTES: int = 30
+    
+    ENVIRONMENT: str = "development"
+    SECURE_EXECUTION_MODE: str = "simulated"
+    LOG_LEVEL: str = "INFO"
+    
+    CORS_ORIGINS: str = "http://localhost:3000"
+    
     @property
-    def hospital_a_url(self) -> str:
-        return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.hospital_a_db}"
-        
-    @property
-    def hospital_b_url(self) -> str:
-        return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.hospital_b_db}"
-        
-    @property
-    def control_url(self) -> str:
-        return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.control_db}"
+    def cors_origins_list(self) -> List[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
 
-@lru_cache()
-def get_settings():
-    return Settings()
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+settings = Settings()

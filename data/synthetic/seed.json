@@ -1,587 +1,108 @@
 {
-  "generated_at": "2026-09-27T18:38:05Z",
-  "patients": [
-    {
-      "id": "patient-A-0001",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0002",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0003",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0004",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0005",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0006",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0007",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0008",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0009",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0010",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0011",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0012",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0013",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0014",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0015",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0016",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0017",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0018",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0019",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0020",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0021",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0022",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0023",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0024",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0025",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0026",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0027",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0028",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0029",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0030",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0031",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0032",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0033",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0034",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0035",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0036",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0037",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0038",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0039",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0040",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0041",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0042",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0043",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0044",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0045",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0046",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0047",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0048",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0049",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-A-0050",
-      "hospital": "A"
-    },
-    {
-      "id": "patient-B-0001",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0002",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0003",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0004",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0005",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0006",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0007",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0008",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0009",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0010",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0011",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0012",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0013",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0014",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0015",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0016",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0017",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0018",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0019",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0020",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0021",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0022",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0023",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0024",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0025",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0026",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0027",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0028",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0029",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0030",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0031",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0032",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0033",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0034",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0035",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0036",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0037",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0038",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0039",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0040",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0041",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0042",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0043",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0044",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0045",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0046",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0047",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0048",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0049",
-      "hospital": "B"
-    },
-    {
-      "id": "patient-B-0050",
-      "hospital": "B"
-    }
-  ],
-  "users": [
-    {
-      "user_id": "user-A-001",
-      "hospital": "A",
-      "role": "SECURITY_ADMIN",
-      "department": "Emergency"
-    },
-    {
-      "user_id": "user-A-002",
-      "hospital": "A",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Pediatrics"
-    },
-    {
-      "user_id": "user-A-003",
-      "hospital": "A",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-A-004",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "Radiology"
-    },
-    {
-      "user_id": "user-A-005",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "Emergency"
-    },
-    {
-      "user_id": "user-A-006",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "Oncology"
-    },
-    {
-      "user_id": "user-A-007",
-      "hospital": "A",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-A-008",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "ICU"
-    },
-    {
-      "user_id": "user-A-009",
-      "hospital": "A",
-      "role": "DOCTOR",
-      "department": "ICU"
-    },
-    {
-      "user_id": "user-A-010",
-      "hospital": "A",
-      "role": "SECURITY_ADMIN",
-      "department": "Oncology"
-    },
-    {
-      "user_id": "user-A-011",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "Emergency"
-    },
-    {
-      "user_id": "user-A-012",
-      "hospital": "A",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-A-013",
-      "hospital": "A",
-      "role": "AUDITOR",
-      "department": "ICU"
-    },
-    {
-      "user_id": "user-A-014",
-      "hospital": "A",
-      "role": "SYSTEM_AGENT",
-      "department": "Radiology"
-    },
-    {
-      "user_id": "user-A-015",
-      "hospital": "A",
-      "role": "DOCTOR",
-      "department": "Oncology"
-    },
-    {
-      "user_id": "user-B-001",
-      "hospital": "B",
-      "role": "SYSTEM_AGENT",
-      "department": "Orthopedics"
-    },
-    {
-      "user_id": "user-B-002",
-      "hospital": "B",
-      "role": "SECURITY_ADMIN",
-      "department": "General Medicine"
-    },
-    {
-      "user_id": "user-B-003",
-      "hospital": "B",
-      "role": "SYSTEM_AGENT",
-      "department": "Oncology"
-    },
-    {
-      "user_id": "user-B-004",
-      "hospital": "B",
-      "role": "AUDITOR",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-B-005",
-      "hospital": "B",
-      "role": "SECURITY_ADMIN",
-      "department": "Radiology"
-    },
-    {
-      "user_id": "user-B-006",
-      "hospital": "B",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Radiology"
-    },
-    {
-      "user_id": "user-B-007",
-      "hospital": "B",
-      "role": "HOSPITAL_ADMIN",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-B-008",
-      "hospital": "B",
-      "role": "DOCTOR",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-B-009",
-      "hospital": "B",
-      "role": "SECURITY_ADMIN",
-      "department": "Orthopedics"
-    },
-    {
-      "user_id": "user-B-010",
-      "hospital": "B",
-      "role": "SYSTEM_AGENT",
-      "department": "Surgery"
-    },
-    {
-      "user_id": "user-B-011",
-      "hospital": "B",
-      "role": "SYSTEM_AGENT",
-      "department": "Neurology"
-    },
-    {
-      "user_id": "user-B-012",
-      "hospital": "B",
-      "role": "AUDITOR",
-      "department": "Surgery"
-    },
-    {
-      "user_id": "user-B-013",
-      "hospital": "B",
-      "role": "DOCTOR",
-      "department": "Radiology"
-    },
-    {
-      "user_id": "user-B-014",
-      "hospital": "B",
-      "role": "AUDITOR",
-      "department": "Surgery"
-    },
-    {
-      "user_id": "user-B-015",
-      "hospital": "B",
-      "role": "AUDITOR",
-      "department": "Surgery"
-    }
-  ]
+  "hospital-A": {
+    "patients": [
+      {
+        "id": "patient-A-001",
+        "resource_data": {
+          "id": "patient-A-001",
+          "resourceType": "Patient",
+          "name": [
+            {
+              "family": "Smith",
+              "given": [
+                "John"
+              ]
+            }
+          ],
+          "birthDate": "1980-01-01"
+        }
+      },
+      {
+        "id": "patient-A-002",
+        "resource_data": {
+          "id": "patient-A-002",
+          "resourceType": "Patient",
+          "name": [
+            {
+              "family": "Doe",
+              "given": [
+                "Jane"
+              ]
+            }
+          ],
+          "birthDate": "1992-05-15"
+        }
+      }
+    ],
+    "resources": [
+      {
+        "id": "obs-A-001",
+        "patient_id": "patient-A-001",
+        "resource_type": "Observation",
+        "resource_data": {
+          "id": "obs-A-001",
+          "resourceType": "Observation",
+          "status": "final",
+          "code": {
+            "text": "Blood Pressure"
+          },
+          "subject": {
+            "reference": "Patient/patient-A-001"
+          }
+        }
+      },
+      {
+        "id": "med-A-001",
+        "patient_id": "patient-A-001",
+        "resource_type": "MedicationRequest",
+        "resource_data": {
+          "id": "med-A-001",
+          "resourceType": "MedicationRequest",
+          "status": "active",
+          "intent": "order",
+          "medicationCodeableConcept": {
+            "text": "Lisinopril"
+          },
+          "subject": {
+            "reference": "Patient/patient-A-001"
+          }
+        }
+      }
+    ]
+  },
+  "hospital-B": {
+    "patients": [
+      {
+        "id": "patient-B-001",
+        "resource_data": {
+          "id": "patient-B-001",
+          "resourceType": "Patient",
+          "name": [
+            {
+              "family": "Brown",
+              "given": [
+                "Bob"
+              ]
+            }
+          ],
+          "birthDate": "1975-11-20"
+        }
+      }
+    ],
+    "resources": [
+      {
+        "id": "enc-B-001",
+        "patient_id": "patient-B-001",
+        "resource_type": "Encounter",
+        "resource_data": {
+          "id": "enc-B-001",
+          "resourceType": "Encounter",
+          "status": "finished",
+          "subject": {
+            "reference": "Patient/patient-B-001"
+          }
+        }
+      }
+    ]
+  }
 }

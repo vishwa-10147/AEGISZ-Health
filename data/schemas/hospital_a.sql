@@ -1,6 +1,11 @@
-CREATE TABLE patients (id VARCHAR(255) PRIMARY KEY);
-CREATE TABLE encounters (id VARCHAR(255) PRIMARY KEY, patient_id VARCHAR(255));
-CREATE TABLE observations (id VARCHAR(255) PRIMARY KEY, patient_id VARCHAR(255));
-CREATE TABLE medication_requests (id VARCHAR(255) PRIMARY KEY, patient_id VARCHAR(255));
-CREATE TABLE diagnostic_reports (id VARCHAR(255) PRIMARY KEY, patient_id VARCHAR(255));
-CREATE TABLE document_references (id VARCHAR(255) PRIMARY KEY, patient_id VARCHAR(255));
+CREATE TABLE IF NOT EXISTS patients (
+    id VARCHAR(50) PRIMARY KEY,
+    resource_data JSONB NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS fhir_resources (
+    id VARCHAR(50) PRIMARY KEY,
+    patient_id VARCHAR(50) REFERENCES patients(id),
+    resource_type VARCHAR(50) NOT NULL,
+    resource_data JSONB NOT NULL
+);
