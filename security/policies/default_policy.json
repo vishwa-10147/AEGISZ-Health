@@ -1,1 +1,21 @@
-{"policy": "allow_all"}
+{
+  "version": "1.0",
+  "roles": {
+    "DOCTOR": {
+      "allowed_actions": ["read", "write", "request_exchange"],
+      "allowed_resources": ["Patient", "Observation", "Encounter", "MedicationRequest", "DiagnosticReport", "DocumentReference"]
+    },
+    "HOSPITAL_ADMIN": {
+      "allowed_actions": ["read", "manage_hospital"],
+      "allowed_resources": ["Hospital", "User"]
+    },
+    "AUDITOR": {
+      "allowed_actions": ["read", "verify_audit"],
+      "allowed_resources": ["AuditEvent", "Patient", "Observation"]
+    },
+    "SECURITY_ADMIN": {
+      "allowed_actions": ["*"],
+      "allowed_resources": ["*"]
+    }
+  }
+}
