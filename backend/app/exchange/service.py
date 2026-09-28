@@ -4,6 +4,7 @@ import uuid
 from app.exchange.request import ExchangeCreate
 from app.hospital.service import HospitalService
 from app.fhir.selector import ResourceSelector
+from app.exchange.transfer import SecureTransfer
 
 class ExchangeService:
     @staticmethod
@@ -41,4 +42,9 @@ class ExchangeService:
         
         # 3. Filter strictly
         filtered = ResourceSelector.filter_authorized(resources, allowed_types)
-        return filtered
+        
+        # 4. Wrap in Quantum-Safe Envelope (simulated keys for dev)
+        transfer = SecureTransfer()
+        envelope = transfer.protect_payload(filtered, recipient_kem_pub="", sender_dsa_sec="")
+        
+        return {"envelope": envelope, "meta": {"protected_by": "ML-KEM + ML-DSA (Simulated)"}}

@@ -1,9 +1,18 @@
-"""Symmetric Cryptography (AES-GCM)."""
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import os
 
-def encrypt_payload(key: bytes, payload: bytes) -> tuple[bytes, bytes]:
-    """Encrypts a payload using AES-GCM. Returns (nonce, ciphertext)."""
-    return (b"nonce", b"ciphertext")
+class SymmetricCrypto:
+    @staticmethod
+    def encrypt_payload(key: bytes, plaintext: bytes) -> dict:
+        """Encrypts data using AES-GCM (AES-256 requires 32-byte key)"""
+        # Ensure key is 32 bytes for AES-256
+        aesgcm = AESGCM(key[:32]) 
+        nonce = os.urandom(12)
+        ciphertext = aesgcm.encrypt(nonce, plaintext, None)
+        return {"ciphertext": ciphertext, "nonce": nonce}
 
-def decrypt_payload(key: bytes, nonce: bytes, ciphertext: bytes) -> bytes:
-    """Decrypts a payload using AES-GCM."""
-    return b"payload"
+    @staticmethod
+    def decrypt_payload(key: bytes, nonce: bytes, ciphertext: bytes) -> bytes:
+        """Decrypts data using AES-GCM and verifies authenticity"""
+        aesgcm = AESGCM(key[:32])
+        return aesgcm.decrypt(nonce, ciphertext, None)
