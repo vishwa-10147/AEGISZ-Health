@@ -1,75 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import apiClient from '../api/client';
 
-export function SecurityCenter() {
+const SecurityCenter = () => {
+  const [quote, setQuote] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const res = await apiClient.get('/attestation/quote');
+        setQuote(res.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchQuote();
+  }, []);
+
   return (
-    <div>
-      <h2 style={{ color: '#f8fafc', marginTop: 0, fontSize: '1.875rem' }}>Security Center</h2>
+    <div style={{ padding: '30px', color: 'white', maxWidth: '1000px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '24px', marginBottom: '20px', fontWeight: 'bold' }}>Hardware Security Center</h2>
       
-      <div style={{ background: '#991b1b', color: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '2rem', fontWeight: 'bold', display: 'inline-block', border: '1px solid #ef4444' }}>
-        WARNING: NEVER DISPLAY PRIVATE KEYS IN UI
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155' }}>
-          <h3 style={{ margin: '0 0 1.5rem 0', color: '#f8fafc', borderBottom: '1px solid #334155', paddingBottom: '0.75rem' }}>PQC Status</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#94a3b8' }}>Key Encapsulation (KEM)</span>
-              <span style={{ color: '#10b981', fontWeight: 'bold', background: '#064e3b', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>ML-KEM (Kyber768) ACTIVE</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#94a3b8' }}>Digital Signatures (DSA)</span>
-              <span style={{ color: '#10b981', fontWeight: 'bold', background: '#064e3b', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>ML-DSA (Dilithium3) ACTIVE</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#94a3b8' }}>Hybrid Mode</span>
-              <span style={{ color: '#38bdf8', fontWeight: 'bold', background: '#0c4a6e', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>ENABLED (X25519)</span>
-            </div>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151' }}>
+          <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>Confidential Computing</h3>
+          <p style={{ margin: '5px 0' }}>Status: <span style={{ color: '#10B981', fontWeight: 'bold' }}>ACTIVE</span></p>
+          <p style={{ margin: '5px 0' }}>Mode: Simulated Secure Enclave</p>
+          <p style={{ margin: '5px 0' }}>Target Environment: IBM LinuxONE Secure Execution</p>
         </div>
 
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155' }}>
-          <h3 style={{ margin: '0 0 1.5rem 0', color: '#f8fafc', borderBottom: '1px solid #334155', paddingBottom: '0.75rem' }}>Secure Execution</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#94a3b8' }}>Enclave Mode</span>
-              <span style={{ color: '#f59e0b', fontWeight: 'bold', background: '#78350f', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>LOCAL DEVELOPMENT / SIMULATED</span>
+        <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151' }}>
+          <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>Hardware Attestation Quote</h3>
+          {quote ? (
+            <div>
+              <p style={{ margin: '5px 0' }}><strong>Quote ID:</strong> <span style={{fontFamily: 'monospace'}}>{quote.quote.quote_id}</span></p>
+              <p style={{ margin: '5px 0' }}><strong>Measurement:</strong> <br/><span style={{fontFamily: 'monospace', fontSize: '11px', color: '#9CA3AF'}}>{quote.quote.measurement}</span></p>
+              <p style={{ margin: '5px 0', marginTop: '10px' }}><strong>Hardware Signature:</strong> <br/><span style={{fontFamily: 'monospace', fontSize: '11px', color: '#60A5FA'}}>{quote.signature.substring(0, 48)}...</span></p>
+              
+              <button style={{ 
+                marginTop: '15px', padding: '8px 12px', backgroundColor: '#374151', 
+                color: 'white', border: '1px solid #4B5563', borderRadius: '4px', cursor: 'pointer' 
+              }}>
+                Verify Hardware Signature
+              </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#94a3b8' }}>Attestation Status</span>
-              <span style={{ color: '#10b981', fontWeight: 'bold', background: '#064e3b', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>VERIFIED (Mock)</span>
-            </div>
-          </div>
-        </div>
-        
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155', gridColumn: 'span 2' }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: '#f8fafc' }}>Recent Signature Verifications</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', color: '#cbd5e1' }}>
-            <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid #334155' }}>
-                <th style={{ padding: '0.75rem' }}>Resource ID</th>
-                <th style={{ padding: '0.75rem' }}>Algorithm</th>
-                <th style={{ padding: '0.75rem' }}>Timestamp</th>
-                <th style={{ padding: '0.75rem' }}>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid #334155' }}>
-                <td style={{ padding: '0.75rem' }}>ENC-9921</td>
-                <td style={{ padding: '0.75rem' }}>ML-DSA</td>
-                <td style={{ padding: '0.75rem' }}>2026-09-27 10:14:02</td>
-                <td style={{ padding: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>SUCCESS</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '0.75rem' }}>OBS-4412</td>
-                <td style={{ padding: '0.75rem' }}>ML-DSA</td>
-                <td style={{ padding: '0.75rem' }}>2026-09-27 10:14:05</td>
-                <td style={{ padding: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>SUCCESS</td>
-              </tr>
-            </tbody>
-          </table>
+          ) : (
+            <p>Loading hardware quote...</p>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default SecurityCenter;
