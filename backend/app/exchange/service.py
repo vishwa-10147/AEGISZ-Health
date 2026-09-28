@@ -8,18 +8,26 @@ from app.exchange.transfer import SecureTransfer
 
 class ExchangeService:
     @staticmethod
-    async def create_request(db: AsyncSession, request: ExchangeCreate, source_hospital: str) -> dict:
+    async def create_request(db: AsyncSession, request: ExchangeCreate, source_hospital: str, username: str = "Unknown") -> dict:
         request_id = f"req-{uuid.uuid4().hex[:8]}"
+        
+        # Break Glass Protocol
+        status = "PENDING"
+        if request.is_emergency:
+            status = "APPROVED"
+            from app.audit.logger import AuditChain
+            await AuditChain.log_event(db, "CRITICAL", "BREAK_GLASS_OVERRIDE", f"Emergency data access by {username} for reason: {request.emergency_reason}")
+
         query = text("""
             INSERT INTO exchange_requests (id, patient_id, source_hospital, destination_hospital, purpose, status)
             VALUES (:id, :pid, :sh, :dh, :purp, :status)
         """)
         await db.execute(query, {
             "id": request_id, "pid": request.patient_id, "sh": source_hospital,
-            "dh": request.destination_hospital, "purp": request.purpose, "status": "PENDING"
+            "dh": request.destination_hospital, "purp": request.purpose, "status": status
         })
         await db.commit()
-        return {"id": request_id, "status": "PENDING"}
+        return {"id": request_id, "status": status, "is_emergency": request.is_emergency}
 
     @staticmethod
     async def get_request(db: AsyncSession, request_id: str) -> dict:

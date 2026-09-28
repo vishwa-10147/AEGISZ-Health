@@ -6,6 +6,8 @@ class ExchangeCreate(BaseModel):
     destination_hospital: str
     purpose: str
     requested_resources: List[str]
+    is_emergency: bool = False
+    emergency_reason: str = None
 
 class ExchangeStatusUpdate(BaseModel):
     status: str

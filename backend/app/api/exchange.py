@@ -1,3 +1,5 @@
+import time
+from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
@@ -7,8 +9,12 @@ from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.exchange.request import ExchangeCreate
 from app.exchange.service import ExchangeService
+from app.audit.logger import AuditChain
 
 router = APIRouter(prefix="/exchange", tags=["Exchange"])
+
+# In-memory Anomaly Detection (Rate Limiter Simulation)
+request_history = defaultdict(list)
 
 @router.post("/request")
 async def request_exchange(
@@ -19,7 +25,21 @@ async def request_exchange(
     if current_user.role.value != "DOCTOR":
         raise HTTPException(status_code=403, detail="Not authorized to request exchanges")
     
-    result = await ExchangeService.create_request(db, req, current_user.hospital_id)
+    # --- AI Anomaly Detection Engine ---
+    now = time.time()
+    user_requests = request_history[current_user.username]
+    # Filter requests in the last 60 seconds
+    user_requests = [t for t in user_requests if now - t < 60]
+    request_history[current_user.username] = user_requests
+    
+    if len(user_requests) >= 3:
+        await AuditChain.log_event(db, "HIGH", "ANOMALY_DETECTED", f"High velocity requests blocked for {current_user.username}")
+        raise HTTPException(status_code=429, detail="AI Anomaly Detected: Abnormal request volume. Account temporarily locked.")
+    
+    request_history[current_user.username].append(now)
+    # -----------------------------------
+    
+    result = await ExchangeService.create_request(db, req, current_user.hospital_id, current_user.username)
     return result
 
 @router.get("/{request_id}")
