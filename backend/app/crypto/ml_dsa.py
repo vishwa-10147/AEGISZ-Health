@@ -3,10 +3,13 @@ import logging
 
 try:
     import oqs
+    _ = getattr(oqs, "Signature", None)
+    if _ is None:
+        raise AttributeError("Wrong oqs module")
     OQS_AVAILABLE = True
-except ImportError:
+except (ImportError, AttributeError):
     OQS_AVAILABLE = False
-    logging.warning("liboqs not found. Using SIMULATED ML-DSA for development.")
+    logging.warning("liboqs not found or wrong module. Using SIMULATED ML-DSA for development.")
 
 class MLDSAService:
     def __init__(self, alg_name: str = "Dilithium2"):

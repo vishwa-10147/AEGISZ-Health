@@ -3,10 +3,14 @@ import logging
 
 try:
     import oqs
+    # Ensure it's the correct liboqs wrapper by checking for an attribute
+    _ = getattr(oqs, "KeyEncapsulation", None)
+    if _ is None:
+        raise AttributeError("Wrong oqs module")
     OQS_AVAILABLE = True
-except ImportError:
+except (ImportError, AttributeError):
     OQS_AVAILABLE = False
-    logging.warning("liboqs not found. Using SIMULATED ML-KEM for development to prevent crashes on systems missing C bindings.")
+    logging.warning("liboqs not found or wrong module. Using SIMULATED ML-KEM for development to prevent crashes.")
 
 class MLKEMService:
     def __init__(self, alg_name: str = "Kyber512"):
