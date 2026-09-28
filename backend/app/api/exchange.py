@@ -56,18 +56,20 @@ async def execute_exchange(
     request_id: str,
     allowed_types: List[str] = Query(...),
     control_db: AsyncSession = Depends(get_control_db),
-    db_a: AsyncSession = Depends(get_hospital_a_db),
-    db_b: AsyncSession = Depends(get_hospital_b_db),
     current_user: User = Depends(get_current_user)
 ):
     req = await ExchangeService.get_request(control_db, request_id)
     if not req:
          raise HTTPException(status_code=404, detail="Request not found")
 
-    target_db = db_a if req["destination_hospital"] == "hospital-A" else db_b
-    
+    from app.core.database import hospital_sessions
+    hospital_id = req["destination_hospital"]
+    if hospital_id not in hospital_sessions:
+        raise HTTPException(status_code=400, detail="Invalid target hospital")
+
     try:
-        resources = await ExchangeService.execute_exchange(control_db, target_db, request_id, allowed_types)
-        return {"request_id": request_id, "data": resources}
+        async with hospital_sessions[hospital_id]() as target_db:
+            resources = await ExchangeService.execute_exchange(control_db, target_db, request_id, allowed_types)
+            return {"request_id": request_id, "data": resources}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

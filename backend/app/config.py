@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     
     HOSPITAL_A_DB_URL: str
     HOSPITAL_B_DB_URL: str
+    HOSPITAL_C_DB_URL: str
+    HOSPITAL_D_DB_URL: str
+    HOSPITAL_E_DB_URL: str
+    HOSPITAL_F_DB_URL: str
     CONTROL_DB_URL: str
     DATABASE_URL: str
     

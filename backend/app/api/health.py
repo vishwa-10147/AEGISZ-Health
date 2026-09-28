@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
-from app.core.database import get_control_db, get_hospital_a_db, get_hospital_b_db
+from app.core.database import get_control_db, hospital_sessions
 
 router = APIRouter()
 
@@ -11,18 +11,17 @@ async def health_check():
 
 @router.get("/ready", tags=["System"])
 async def readiness_check(
-    db_control: AsyncSession = Depends(get_control_db),
-    db_a: AsyncSession = Depends(get_hospital_a_db),
-    db_b: AsyncSession = Depends(get_hospital_b_db)
+    db_control: AsyncSession = Depends(get_control_db)
 ):
     status = {"status": "ready", "databases": {}}
     try:
         await db_control.execute(text("SELECT 1"))
         status["databases"]["control"] = "connected"
-        await db_a.execute(text("SELECT 1"))
-        status["databases"]["hospital_a"] = "connected"
-        await db_b.execute(text("SELECT 1"))
-        status["databases"]["hospital_b"] = "connected"
+        
+        for name, session_maker in hospital_sessions.items():
+            async with session_maker() as session:
+                await session.execute(text("SELECT 1"))
+                status["databases"][name] = "connected"
     except Exception as e:
         status["status"] = "not_ready"
         status["error"] = str(e)
