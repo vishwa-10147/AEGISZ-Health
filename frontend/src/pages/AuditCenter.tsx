@@ -1,73 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import apiClient from '../api/client';
 
-export function AuditCenter() {
+const AuditCenter = () => {
+  const [events, setEvents] = useState([]);
+  const [verification, setVerification] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [eventsRes, verifyRes] = await Promise.all([
+          apiClient.get('/audit/events'),
+          apiClient.get('/audit/verify')
+        ]);
+        setEvents(eventsRes.data);
+        setVerification(verifyRes.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
-    <div>
-      <h2 style={{ color: '#f8fafc', marginTop: 0, fontSize: '1.875rem' }}>Audit Center</h2>
+    <div style={{ padding: '30px', color: 'white', maxWidth: '1200px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '24px', marginBottom: '20px', fontWeight: 'bold' }}>Tamper-Evident Audit Center</h2>
       
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155', flex: 1 }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: '#94a3b8', fontSize: '0.875rem', textTransform: 'uppercase' }}>Audit Chain Verification</h3>
-          <div style={{ color: '#10b981', fontSize: '1.5rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>✓</span> VALID (No Tampering Detected)
-          </div>
+      {verification && (
+        <div style={{ 
+          backgroundColor: verification.status === 'VALID' ? '#064E3B' : '#7F1D1D', 
+          padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #374151'
+        }}>
+          <h3 style={{ margin: '0 0 5px 0' }}>Chain Status: {verification.status === 'VALID' ? '✅ INTACT' : '🔴 TAMPER DETECTED'}</h3>
+          <p style={{ margin: 0 }}>{verification.message} (Events verified: {verification.events_checked})</p>
         </div>
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155', flex: 1 }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: '#94a3b8', fontSize: '0.875rem', textTransform: 'uppercase' }}>AI Anomaly Detection</h3>
-          <div style={{ color: '#38bdf8', fontSize: '1.5rem', fontWeight: 'bold' }}>0 Active Anomalies</div>
-        </div>
-      </div>
+      )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        <div style={{ background: '#1e293b', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
-          <div style={{ padding: '1.5rem', borderBottom: '1px solid #334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, color: '#f8fafc' }}>Event Log</h3>
-            <select style={{ background: '#0f172a', color: 'white', border: '1px solid #334155', borderRadius: '4px', padding: '0.5rem', outline: 'none' }}>
-              <option>All Severities</option>
-              <option>High</option>
-              <option>Medium</option>
-              <option>Low</option>
-            </select>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', color: '#cbd5e1' }}>
-            <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid #334155', background: '#0f172a' }}>
-                <th style={{ padding: '1rem 1.5rem' }}>Time</th>
-                <th style={{ padding: '1rem 1.5rem' }}>Action</th>
-                <th style={{ padding: '1rem 1.5rem' }}>Actor</th>
-                <th style={{ padding: '1rem 1.5rem' }}>Severity</th>
+      <div style={{ backgroundColor: '#1F2937', borderRadius: '8px', overflow: 'hidden', border: '1px solid #374151' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead style={{ backgroundColor: '#111827', borderBottom: '1px solid #374151' }}>
+            <tr>
+              <th style={{ padding: '12px 15px' }}>Timestamp</th>
+              <th style={{ padding: '12px 15px' }}>Actor</th>
+              <th style={{ padding: '12px 15px' }}>Action</th>
+              <th style={{ padding: '12px 15px' }}>Decision</th>
+              <th style={{ padding: '12px 15px' }}>Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((e: any) => (
+              <tr key={e.id} style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '12px 15px', color: '#9CA3AF' }}>{new Date(e.timestamp).toLocaleString()}</td>
+                <td style={{ padding: '12px 15px' }}>{e.actor_id} <span style={{fontSize:'12px', color: '#6B7280'}}>({e.hospital_id})</span></td>
+                <td style={{ padding: '12px 15px' }}>{e.action}</td>
+                <td style={{ padding: '12px 15px' }}>
+                  <span style={{ color: e.decision === 'ALLOW' ? '#10B981' : '#EF4444' }}>{e.decision}</span>
+                </td>
+                <td style={{ padding: '12px 15px' }}>
+                  <span style={{ 
+                    padding: '3px 8px', borderRadius: '12px', fontSize: '12px',
+                    backgroundColor: e.severity === 'INFO' ? '#1E3A8A' : e.severity === 'HIGH' ? '#991B1B' : '#374151'
+                  }}>
+                    {e.severity}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid #334155' }}>
-                <td style={{ padding: '1rem 1.5rem' }}>2026-09-27 10:00:00</td>
-                <td style={{ padding: '1rem 1.5rem' }}>Exchange Initiated</td>
-                <td style={{ padding: '1rem 1.5rem' }}>Dr. Smith</td>
-                <td style={{ padding: '1rem 1.5rem' }}><span style={{ color: '#10b981', fontWeight: 'bold' }}>INFO</span></td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #334155' }}>
-                <td style={{ padding: '1rem 1.5rem' }}>2026-09-27 09:15:22</td>
-                <td style={{ padding: '1rem 1.5rem' }}>Failed Auth Attempt</td>
-                <td style={{ padding: '1rem 1.5rem' }}>Unknown (192.168.1.10)</td>
-                <td style={{ padding: '1rem 1.5rem' }}><span style={{ color: '#f59e0b', fontWeight: 'bold' }}>WARN</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '8px', border: '1px solid #334155' }}>
-          <h3 style={{ margin: '0 0 1.5rem 0', color: '#f8fafc' }}>AI Explanations</h3>
-          <div style={{ padding: '1.25rem', background: '#0f172a', borderRadius: '4px', color: '#cbd5e1', fontSize: '0.875rem', border: '1px solid #334155' }}>
-            <strong style={{ color: '#f8fafc', display: 'block', marginBottom: '0.75rem' }}>Analysis of Failed Auth (09:15:22):</strong>
-            <p style={{ margin: '0 0 1rem 0', lineHeight: '1.5' }}>This appears to be a routine typo event. The user successfully logged in 12 seconds later from the same IP address.</p>
-            <p style={{ margin: 0, lineHeight: '1.5' }}>No lateral movement or brute force patterns detected.</p>
-            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8' }}>Risk Level:</span>
-              <span style={{ color: '#10b981', fontWeight: 'bold' }}>LOW</span>
-            </div>
-          </div>
-        </div>
+            ))}
+          </tbody>
+        </table>
+        {events.length === 0 && <p style={{ padding: '20px', textAlign: 'center', color: '#9CA3AF' }}>No audit events found.</p>}
       </div>
     </div>
   );
-}
+};
+
+export default AuditCenter;

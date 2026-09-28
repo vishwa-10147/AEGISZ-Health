@@ -1,24 +1,20 @@
-"""Audit endpoints."""
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_control_db
+from app.audit.service import AuditService
+from app.audit.verification import AuditVerification
 
-router = APIRouter(prefix="/audit", tags=["audit"])
+router = APIRouter(prefix="/audit", tags=["Audit"])
 
 @router.get("/events")
-async def get_events() -> dict:
-    """GET /audit/events"""
-    return {"events": []}
-
-@router.get("/events/{event_id}")
-async def get_event(event_id: str) -> dict:
-    """GET /audit/events/{event_id}"""
-    return {"event_id": event_id}
+async def get_audit_events(limit: int = 50, db: AsyncSession = Depends(get_control_db)):
+    events = await AuditService.get_events(db, limit)
+    # Serialize datetime objects for JSON
+    for e in events:
+        if hasattr(e['timestamp'], 'isoformat'):
+            e['timestamp'] = e['timestamp'].isoformat()
+    return events
 
 @router.get("/verify")
-async def verify_audit() -> dict:
-    """GET /audit/verify"""
-    return {"valid": True}
-
-@router.post("/analyze")
-async def analyze_audit() -> dict:
-    """POST /audit/analyze"""
-    return {"analysis": "complete"}
+async def verify_audit_chain(db: AsyncSession = Depends(get_control_db)):
+    return await AuditVerification.verify_chain(db)

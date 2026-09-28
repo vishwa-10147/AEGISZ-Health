@@ -4,6 +4,7 @@ from app.config import settings
 import app.api.health as health
 import app.api.auth as auth
 import app.api.exchange as exchange
+import app.api.audit as audit
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(exchange.router)
+app.include_router(audit.router)
 
 @app.get("/", tags=["System"])
 async def root():
