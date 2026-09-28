@@ -1,8 +1,11 @@
-"""Exchange Models."""
 from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
 
-class ExchangeStatus(BaseModel):
-    status: str
-
-class ExchangeRequest(BaseModel):
+class ExchangeRequestModel(BaseModel):
     id: str
+    patient_id: str
+    source_hospital: str
+    destination_hospital: str
+    purpose: str
+    status: str

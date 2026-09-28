@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 import app.api.health as health
 import app.api.auth as auth
+import app.api.exchange as exchange
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,6 +23,7 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router)
 app.include_router(auth.router)
+app.include_router(exchange.router)
 
 @app.get("/", tags=["System"])
 async def root():
