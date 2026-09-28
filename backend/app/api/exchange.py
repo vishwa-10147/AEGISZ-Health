@@ -9,7 +9,7 @@ from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.exchange.request import ExchangeCreate
 from app.exchange.service import ExchangeService
-from app.audit.logger import AuditChain
+from app.audit.service import AuditService
 
 router = APIRouter(prefix="/exchange", tags=["Exchange"])
 
@@ -33,7 +33,10 @@ async def request_exchange(
     request_history[current_user.username] = user_requests
     
     if len(user_requests) >= 3:
-        await AuditChain.log_event(db, "HIGH", "ANOMALY_DETECTED", f"High velocity requests blocked for {current_user.username}")
+        await AuditService.create_event(
+            db=db, actor_id=current_user.username, hospital_id=current_user.hospital_id,
+            action="ANOMALY_DETECTED", purpose="High velocity requests blocked", severity="HIGH"
+        )
         raise HTTPException(status_code=429, detail="AI Anomaly Detected: Abnormal request volume. Account temporarily locked.")
     
     request_history[current_user.username].append(now)

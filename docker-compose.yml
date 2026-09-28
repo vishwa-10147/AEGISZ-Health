@@ -92,6 +92,32 @@ services:
     networks:
       - aegisz_net
 
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    networks:
+      - aegisz_net
+    depends_on:
+      - control-db
+      - hospital-a-db
+      - hospital-b-db
+      - hospital-c-db
+      - hospital-d-db
+      - hospital-e-db
+      - hospital-f-db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    networks:
+      - aegisz_net
+    depends_on:
+      - backend
+
 volumes:
   hospital_a_data:
   hospital_b_data:

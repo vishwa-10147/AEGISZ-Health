@@ -12,13 +12,13 @@ class AuditService:
         purpose: str = None, decision: str = "ALLOW", severity: str = "INFO"
     ):
         event_id = f"evt-{uuid.uuid4().hex[:12]}"
-        timestamp = datetime.datetime.utcnow().isoformat()
+        timestamp_dt = datetime.datetime.utcnow()
         
         previous_hash = await AuditChain.get_last_hash(db)
         
         event_data = {
             "id": event_id,
-            "timestamp": timestamp,
+            "timestamp": timestamp_dt.isoformat(),
             "actor_id": actor_id,
             "hospital_id": hospital_id,
             "action": action,
@@ -41,7 +41,7 @@ class AuditService:
             )
         """)
         await db.execute(query, {
-            "id": event_id, "ts": timestamp, "act": actor_id, "hosp": hospital_id,
+            "id": event_id, "ts": timestamp_dt, "act": actor_id, "hosp": hospital_id,
             "actn": action, "rt": resource_type, "rih": resource_identifier_hash,
             "purp": purpose, "dec": decision, "sev": severity, 
             "ph": previous_hash, "eh": event_hash

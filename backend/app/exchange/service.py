@@ -15,8 +15,11 @@ class ExchangeService:
         status = "PENDING"
         if request.is_emergency:
             status = "APPROVED"
-            from app.audit.logger import AuditChain
-            await AuditChain.log_event(db, "CRITICAL", "BREAK_GLASS_OVERRIDE", f"Emergency data access by {username} for reason: {request.emergency_reason}")
+            from app.audit.service import AuditService
+            await AuditService.create_event(
+                db=db, actor_id=username, hospital_id=source_hospital,
+                action="BREAK_GLASS_OVERRIDE", purpose=request.emergency_reason, severity="CRITICAL"
+            )
 
         query = text("""
             INSERT INTO exchange_requests (id, patient_id, source_hospital, destination_hospital, purpose, status)
