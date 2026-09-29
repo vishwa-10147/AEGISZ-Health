@@ -16,6 +16,19 @@ router = APIRouter(prefix="/exchange", tags=["Exchange"])
 # In-memory Anomaly Detection (Rate Limiter Simulation)
 request_history = defaultdict(list)
 
+@router.get("/")
+async def list_exchanges(
+    db: AsyncSession = Depends(get_control_db),
+    current_user: User = Depends(get_current_user)
+):
+    query = text("SELECT * FROM exchange_requests LIMIT 20")
+    res = await db.execute(query)
+    reqs = []
+    for row in res.fetchall():
+        r = dict(row._mapping)
+        reqs.append(r)
+    return reqs
+
 @router.post("/request")
 async def request_exchange(
     req: ExchangeCreate,
