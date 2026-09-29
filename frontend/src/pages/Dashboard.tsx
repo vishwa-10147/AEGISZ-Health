@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/client';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+
+const mockAnalyticsData = [
+  { time: '08:00', requests: 12, anomalies: 0 },
+  { time: '09:00', requests: 19, anomalies: 1 },
+  { time: '10:00', requests: 45, anomalies: 0 },
+  { time: '11:00', requests: 82, anomalies: 4 },
+  { time: '12:00', requests: 65, anomalies: 2 },
+  { time: '13:00', requests: 110, anomalies: 12 },
+  { time: '14:00', requests: 95, anomalies: 3 },
+  { time: '15:00', requests: 154, anomalies: 8 },
+];
 
 const Dashboard = () => {
   const role = localStorage.getItem('role') || 'Unknown';
@@ -58,6 +70,33 @@ const Dashboard = () => {
           <Link to="/audit" style={{ display: 'inline-block', marginTop: '15px', color: '#60A5FA', textDecoration: 'none' }}>
             View Ledger ➔
           </Link>
+        </div>
+      </div>
+
+      {/* Analytics Chart Row */}
+      <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', marginTop: '20px' }}>
+        <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '20px', color: '#9CA3AF' }}>Live Mesh Network Traffic & AI Threat Detection</h3>
+        <div style={{ height: '300px', width: '100%' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={mockAnalyticsData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorReq" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorAnom" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="time" stroke="#9CA3AF" />
+              <YAxis stroke="#9CA3AF" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151' }} />
+              <Area type="monotone" dataKey="requests" name="Exchange Requests" stroke="#3B82F6" fillOpacity={1} fill="url(#colorReq)" />
+              <Area type="monotone" dataKey="anomalies" name="AI Anomalies Blocked" stroke="#EF4444" fillOpacity={1} fill="url(#colorAnom)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
