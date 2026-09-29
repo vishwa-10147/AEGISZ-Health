@@ -138,7 +138,7 @@ const ExchangeCenter = () => {
               <div key={req.id} style={{ padding: '15px', border: '1px dashed #4B5563', borderRadius: '4px', backgroundColor: '#111827', marginBottom: '10px' }}>
                 <p style={{ margin: '5px 0', fontSize: '12px', color: '#9CA3AF' }}><strong>Req ID:</strong> {req.id}</p>
                 <p style={{ margin: '5px 0' }}><strong>Patient:</strong> {req.patient_id}</p>
-                <p style={{ margin: '5px 0' }}><strong>From:</strong> {req.requesting_hospital}</p>
+                <p style={{ margin: '5px 0' }}><strong>From:</strong> {req.source_hospital}</p>
                 <p style={{ margin: '5px 0', color: '#F59E0B' }}><strong>Purpose:</strong> {req.purpose}</p>
                 <div style={{ marginTop: '15px' }}>
                   <button onClick={() => handleApprove(req.id)} style={{ padding: '6px 15px', backgroundColor: '#10B981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px', fontWeight: 'bold' }}>Approve</button>
@@ -148,16 +148,31 @@ const ExchangeCenter = () => {
             ))}
           </div>
 
-          {/* Network Global Requests View */}
-          <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', flex: 1, overflowY: 'auto' }}>
-            <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>Global Exchange Log</h3>
-            {requests.slice(0, 5).map(req => (
-              <div key={req.id} style={{ fontSize: '12px', padding: '8px', borderBottom: '1px solid #374151' }}>
-                <span style={{ color: req.status === 'APPROVED' ? '#10B981' : (req.status === 'EMERGENCY' ? '#EF4444' : '#F59E0B') }}>[{req.status}]</span>
-                {' '} {req.requesting_hospital} ➔ {req.destination_hospital} (Patient: {req.patient_id})
-              </div>
-            ))}
-          </div>
+          {/* Role-Based History View */}
+          {role === 'ADMIN' ? (
+            <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', flex: 1, overflowY: 'auto' }}>
+              <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>Global Exchange Log (Admin Only)</h3>
+              {requests.slice(0, 10).map(req => (
+                <div key={req.id} style={{ fontSize: '12px', padding: '8px', borderBottom: '1px solid #374151' }}>
+                  <span style={{ color: req.status === 'APPROVED' ? '#10B981' : (req.status === 'EMERGENCY' ? '#EF4444' : '#F59E0B') }}>[{req.status}]</span>
+                  {' '} {req.source_hospital} ➔ {req.destination_hospital} (Patient: {req.patient_id})
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', flex: 1, overflowY: 'auto' }}>
+              <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>My Hospital's History</h3>
+              {requests.filter(r => r.source_hospital === hospital || r.destination_hospital === hospital).length === 0 && (
+                <p style={{ color: '#9CA3AF' }}>No exchange history found for {hospital}.</p>
+              )}
+              {requests.filter(r => r.source_hospital === hospital || r.destination_hospital === hospital).map(req => (
+                <div key={req.id} style={{ fontSize: '12px', padding: '8px', borderBottom: '1px solid #374151' }}>
+                  <span style={{ color: req.status === 'APPROVED' ? '#10B981' : (req.status === 'EMERGENCY' ? '#EF4444' : '#F59E0B') }}>[{req.status}]</span>
+                  {' '} {req.source_hospital === hospital ? '📤 OUTBOUND to ' + req.destination_hospital : '📥 INBOUND from ' + req.source_hospital} (Patient: {req.patient_id})
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>
