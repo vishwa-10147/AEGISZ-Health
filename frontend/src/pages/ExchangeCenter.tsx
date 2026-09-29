@@ -12,6 +12,7 @@ const ExchangeCenter = () => {
 
   const [requests, setRequests] = useState<any[]>([]);
   const hospital = localStorage.getItem('hospital_id') || '';
+  const role = localStorage.getItem('role') || '';
 
   const fetchRequests = () => {
     apiClient.get('/exchange/')
