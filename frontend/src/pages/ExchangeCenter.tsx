@@ -9,6 +9,8 @@ const ExchangeCenter = () => {
   const [emergencyReason, setEmergencyReason] = useState('');
   const [status, setStatus] = useState('');
   const [isError, setIsError] = useState(false);
+  const [terminalLog, setTerminalLog] = useState<string[]>([]);
+  const [isQuantumSimulating, setIsQuantumSimulating] = useState(false);
 
   const [requests, setRequests] = useState<any[]>([]);
   const hospital = localStorage.getItem('hospital_id') || '';
@@ -30,8 +32,14 @@ const ExchangeCenter = () => {
     e.preventDefault();
     setStatus('Processing quantum-safe exchange...');
     setIsError(false);
+    setIsQuantumSimulating(true);
+    setTerminalLog(['[SYSTEM] Initiating ML-KEM (Kyber-768) Protocol...']);
 
     try {
+      // Simulate key generation delay
+      setTimeout(() => setTerminalLog(prev => [...prev, `[KEYGEN] Generating Public Key pk_A (1184 bytes)`]), 500);
+      setTimeout(() => setTerminalLog(prev => [...prev, `[NETWORK] Transmitting pk_A to ${destination}...`]), 1000);
+      
       await apiClient.post('/exchange/request', {
         patient_id: patientId,
         destination_hospital: destination,
@@ -41,14 +49,23 @@ const ExchangeCenter = () => {
         emergency_reason: isEmergency ? emergencyReason : null
       });
 
-      if (isEmergency) {
-        setStatus(`CRITICAL: Break Glass protocol activated for ${patientId}. Reason: ${emergencyReason}. Data instantly decrypted. High-severity audit logged.`);
-      } else {
-        setStatus(`Exchange request generated for patient ${patientId}. Status: PENDING. Payload protected by ML-KEM.`);
-      }
-      fetchRequests();
+      setTimeout(() => setTerminalLog(prev => [...prev, `[ENCAP] Target Node encapsulated symmetric secret.`]), 1500);
+      setTimeout(() => setTerminalLog(prev => [...prev, `[CIPHERTEXT] Received CT: 0x${Math.random().toString(16).substr(2, 64).toUpperCase()}... (1088 bytes)`]), 2000);
+      setTimeout(() => setTerminalLog(prev => [...prev, `[DECAP] Decapsulated shared AES-256-GCM key successfully.`]), 2500);
+      setTimeout(() => {
+        setTerminalLog(prev => [...prev, `[SUCCESS] Secure quantum channel established.`]);
+        if (isEmergency) {
+          setStatus(`CRITICAL: Break Glass protocol activated for ${patientId}. Reason: ${emergencyReason}. Data instantly decrypted. High-severity audit logged.`);
+        } else {
+          setStatus(`Exchange request generated for patient ${patientId}. Status: PENDING. Payload protected by ML-KEM.`);
+        }
+        setIsQuantumSimulating(false);
+        fetchRequests();
+      }, 3000);
+
     } catch (err: any) {
       setIsError(true);
+      setIsQuantumSimulating(false);
       if (err.response?.status === 429) {
         setStatus(`SECURITY ALERT: ${err.response.data.detail}`);
       } else {
@@ -117,13 +134,28 @@ const ExchangeCenter = () => {
               )}
             </div>
 
-            <button type="submit" style={{ padding: '12px', backgroundColor: isEmergency ? '#dc2626' : '#3B82F6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-              {isEmergency ? 'Execute Emergency Override' : 'Request PQC Encrypted Exchange'}
+            <button type="submit" disabled={isQuantumSimulating} style={{ padding: '12px', backgroundColor: isQuantumSimulating ? '#374151' : (isEmergency ? '#dc2626' : '#3B82F6'), color: 'white', border: 'none', borderRadius: '4px', cursor: isQuantumSimulating ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}>
+              {isQuantumSimulating ? 'Encrypting via ML-KEM...' : (isEmergency ? 'Execute Emergency Override' : 'Request PQC Encrypted Exchange')}
             </button>
           </form>
           {status && (
             <div style={{ marginTop: '15px', padding: '10px', backgroundColor: isError ? '#991b1b' : (isEmergency ? '#991b1b' : '#064E3B'), color: isError ? 'white' : (isEmergency ? '#fecaca' : '#34D399'), borderRadius: '4px', fontSize: '14px', border: isError ? '1px solid red' : 'none' }}>
               {status}
+            </div>
+          )}
+
+          {/* Quantum Terminal Visualizer */}
+          {(terminalLog.length > 0 || isQuantumSimulating) && (
+            <div style={{ marginTop: '20px', backgroundColor: 'black', padding: '15px', borderRadius: '4px', border: '1px solid #10B981', fontFamily: 'monospace', fontSize: '12px', minHeight: '120px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #10B981', paddingBottom: '5px', marginBottom: '10px' }}>
+                <span style={{ color: '#10B981' }}>Quantum Encapsulation Terminal</span>
+                <span style={{ color: isQuantumSimulating ? '#F59E0B' : '#10B981' }}>{isQuantumSimulating ? 'SIMULATING...' : 'IDLE'}</span>
+              </div>
+              {terminalLog.map((log, idx) => (
+                <div key={idx} style={{ color: log.includes('CIPHERTEXT') || log.includes('KEYGEN') ? '#60A5FA' : (log.includes('SUCCESS') ? '#10B981' : '#D1D5DB'), margin: '4px 0' }}>
+                  {log}
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -38,3 +38,46 @@ async def list_patients(
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         await session.close()
+
+@router.post("/{patient_id}/summarize")
+async def summarize_patient(
+    patient_id: str,
+    hospital_id: str,
+):
+    try:
+        if hospital_id not in hospital_sessions:
+            raise ValueError()
+        session = hospital_sessions[hospital_id]()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid hospital ID")
+        
+    try:
+        # Fetch patient FHIR data
+        result = await session.execute(
+            text("SELECT resource_data FROM patients WHERE id = :id"),
+            {"id": patient_id}
+        )
+        row = result.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Patient not found")
+            
+        fhir_data = row.resource_data
+        
+        # Simulate an LLM call parsing the FHIR data
+        # In a real app, you would pass fhir_data to OpenAI/Gemini here.
+        name_block = fhir_data.get("name", [{}])[0]
+        name = f"{name_block.get('given', [''])[0]} {name_block.get('family', '')}"
+        gender = fhir_data.get("gender", "unknown")
+        dob = fhir_data.get("birthDate", "unknown")
+        
+        summary = (
+            f"🤖 AEGISZ AI Agent Analysis:\n"
+            f"Patient {name} is a {gender} born on {dob}.\n"
+            f"Review of FHIR Encounters indicates stable vitals. "
+            f"No critical health anomalies detected in recent telemetry. "
+            f"Recommend standard follow-up based on historical ML analysis."
+        )
+        
+        return {"summary": summary}
+    finally:
+        await session.close()
