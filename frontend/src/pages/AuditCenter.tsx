@@ -1,11 +1,24 @@
 import { useState, useEffect } from 'react';
+import apiClient from '../api/client';
 
 const AuditCenter = () => {
-  const [logs, setLogs] = useState([
-    { id: '1', time: '18:22:45', action: 'EXCHANGE_APPROVED', hospital: 'hospital-F', hash: '8f3a9b...' },
-    { id: '2', time: '18:24:12', action: 'ANOMALY_DETECTED', hospital: 'hospital-C', hash: 'e2c41f...', critical: true },
-    { id: '3', time: '18:25:33', action: 'BREAK_GLASS_OVERRIDE', hospital: 'hospital-A', hash: 'da3eeb...', critical: true },
-  ]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real audit events
+  const fetchLogs = () => {
+    apiClient.get('/audit/events')
+      .then(res => setLogs(res.data || []))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchLogs();
+    // Auto-refresh every 5 seconds to show realtime updates
+    const interval = setInterval(fetchLogs, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [simulating, setSimulating] = useState(false);
   const [packetPosition, setPacketPosition] = useState(0);
@@ -17,13 +30,18 @@ const AuditCenter = () => {
     setTimeout(() => {
       setSimulating(false);
       setPacketPosition(0);
-      setLogs(prev => [{ id: Date.now().toString(), time: new Date().toLocaleTimeString(), action: 'QUANTUM_PAYLOAD_DELIVERED', hospital: 'hospital-A', hash: 'c9f201...' }, ...prev]);
+      fetchLogs(); // refresh logs after simulation ends
     }, 3000);
   };
 
   return (
     <div style={{ color: 'white', maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '20px' }}>Global Security Ledger (Live)</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: 'bold', margin: 0 }}>Global Security Ledger (Live)</h2>
+        <button onClick={fetchLogs} style={{ padding: '8px 15px', backgroundColor: '#374151', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          Refresh Ledger
+        </button>
+      </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '30px' }}>
         
@@ -92,16 +110,29 @@ const AuditCenter = () => {
         <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', height: '400px', overflowY: 'auto' }}>
           <h3 style={{ color: '#9CA3AF', marginBottom: '20px' }}>Tamper-Evident Hash Chain</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {logs.map((log) => (
-              <div key={log.id} style={{ padding: '10px', backgroundColor: log.critical ? '#450a0a' : '#111827', borderLeft: `4px solid ${log.critical ? '#ef4444' : '#10b981'}`, borderRadius: '4px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#9CA3AF' }}>
-                  <span>{log.time}</span>
-                  <span>{log.hospital}</span>
+            {loading && <p style={{ color: '#9CA3AF' }}>Loading live ledger events...</p>}
+            {!loading && logs.length === 0 && <p style={{ color: '#9CA3AF' }}>No events in ledger yet.</p>}
+            {logs.map((log) => {
+              const isCritical = log.severity === 'CRITICAL';
+              const isHigh = log.severity === 'HIGH';
+              const isWarning = log.severity === 'WARNING';
+              const bg = isCritical ? '#450a0a' : isWarning ? '#422006' : '#111827';
+              const border = isCritical ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
+              const textCol = isCritical ? '#fca5a5' : isWarning ? '#fcd34d' : 'white';
+              
+              return (
+                <div key={log.id} style={{ padding: '10px', backgroundColor: bg, borderLeft: `4px solid ${border}`, borderRadius: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#9CA3AF' }}>
+                    <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                    <span>{log.hospital_id}</span>
+                  </div>
+                  <div style={{ fontWeight: 'bold', color: textCol, margin: '5px 0' }}>{log.action}</div>
+                  <div style={{ fontSize: '12px', fontFamily: 'monospace', color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    SHA256: {log.hash}
+                  </div>
                 </div>
-                <div style={{ fontWeight: 'bold', color: log.critical ? '#fca5a5' : 'white', margin: '5px 0' }}>{log.action}</div>
-                <div style={{ fontSize: '12px', fontFamily: 'monospace', color: '#6B7280' }}>SHA256: {log.hash}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         
