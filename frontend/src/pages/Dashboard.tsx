@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import apiClient from '../api/client';
 
 const Dashboard = () => {
   const role = localStorage.getItem('role') || 'Unknown';
   const hospital = localStorage.getItem('hospital_id') || 'Global';
   const [networkHealth, setNetworkHealth] = useState<any>(null);
+  const [patients, setPatients] = useState<any[]>([]);
 
   useEffect(() => {
-    // Mock network health fetch for demo purposes
-    setTimeout(() => {
-      setNetworkHealth({
-        status: "ready",
-        databases: {
-          control: "connected",
-          "hospital-A": "connected",
-          "hospital-B": "connected",
-          "hospital-C": "connected",
-          "hospital-D": "connected",
-          "hospital-E": "connected",
-          "hospital-F": "connected",
-        }
-      });
-    }, 1000);
-  }, []);
+    // Fetch real network health
+    apiClient.get('/ready').then(res => setNetworkHealth(res.data)).catch(console.error);
+
+    // Fetch real patients if Doctor
+    if (role === 'DOCTOR') {
+      apiClient.get(`/patients/?hospital_id=${hospital}&limit=5`)
+        .then(res => setPatients(res.data.patients || []))
+        .catch(console.error);
+    }
+  }, [role, hospital]);
 
   const renderAdminDashboard = () => (
     <div style={{ padding: '30px', color: 'white', maxWidth: '1200px', margin: '0 auto' }}>
@@ -38,7 +34,7 @@ const Dashboard = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             {networkHealth ? Object.keys(networkHealth.databases).map(db => (
               <div key={db} style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
-                <span style={{ color: '#10B981', marginRight: '8px' }}>●</span> {db.replace('hospital-', 'Hosp ')}
+                <span style={{ color: networkHealth.databases[db] === 'connected' ? '#10B981' : '#EF4444', marginRight: '8px' }}>●</span> {db.replace('hospital-', 'Hosp ')}
               </div>
             )) : <p>Scanning network...</p>}
           </div>
@@ -47,7 +43,7 @@ const Dashboard = () => {
         {/* Action Center */}
         <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', borderTop: '4px solid #F59E0B' }}>
           <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px', color: '#9CA3AF' }}>Action Required</h3>
-          <p style={{ margin: '5px 0', fontSize: '18px' }}>Pending Approvals: <strong style={{ color: '#F59E0B' }}>3</strong></p>
+          <p style={{ margin: '5px 0', fontSize: '18px' }}>Pending Approvals: <strong style={{ color: '#F59E0B' }}>0</strong></p>
           <p style={{ fontSize: '14px', color: '#9CA3AF', marginTop: '10px' }}>Doctors are waiting for data governance approval.</p>
           <Link to="/exchange" style={{ display: 'inline-block', marginTop: '15px', backgroundColor: '#F59E0B', color: 'black', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}>
             Review Requests
@@ -58,9 +54,9 @@ const Dashboard = () => {
         <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', borderTop: '4px solid #10B981' }}>
           <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px', color: '#9CA3AF' }}>Security Overview</h3>
           <p style={{ margin: '5px 0' }}>Quantum Envelope: <span style={{ color: '#10B981', fontWeight: 'bold' }}>ML-KEM Active</span></p>
-          <p style={{ margin: '5px 0' }}>Tamper Logs: <span style={{ color: '#10B981', fontWeight: 'bold' }}>0 Threats</span></p>
+          <p style={{ margin: '5px 0' }}>Tamper Logs: <span style={{ color: '#10B981', fontWeight: 'bold' }}>Live Logging</span></p>
           <Link to="/audit" style={{ display: 'inline-block', marginTop: '15px', color: '#60A5FA', textDecoration: 'none' }}>
-            View Ledger →
+            View Ledger ➔
           </Link>
         </div>
       </div>
@@ -78,33 +74,27 @@ const Dashboard = () => {
         {/* Patient Roster */}
         <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px' }}>
-            <h3 style={{ color: '#9CA3AF', margin: 0 }}>My Local Patients (Sample)</h3>
-            <span style={{ color: '#60A5FA', fontSize: '14px', cursor: 'pointer' }}>View All 50</span>
+            <h3 style={{ color: '#9CA3AF', margin: 0 }}>My Local Patients ({patients.length})</h3>
+            <Link to="/patients" style={{ color: '#60A5FA', fontSize: '14px', textDecoration: 'none' }}>View All</Link>
           </div>
           <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ color: '#9CA3AF', borderBottom: '1px solid #374151' }}>
                 <th style={{ padding: '10px 0' }}>Patient ID</th>
-                <th>Status</th>
+                <th>Name</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr style={{ borderBottom: '1px solid #374151' }}>
-                <td style={{ padding: '10px 0', fontFamily: 'monospace' }}>pat-{hospital}-0</td>
-                <td><span style={{ color: '#10B981' }}>Stable</span></td>
-                <td><Link to="/patient/test" style={{ color: '#60A5FA' }}>View Chart</Link></td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #374151' }}>
-                <td style={{ padding: '10px 0', fontFamily: 'monospace' }}>pat-{hospital}-1</td>
-                <td><span style={{ color: '#F59E0B' }}>Review Labs</span></td>
-                <td><Link to="/patient/test" style={{ color: '#60A5FA' }}>View Chart</Link></td>
-              </tr>
-              <tr>
-                <td style={{ padding: '10px 0', fontFamily: 'monospace' }}>pat-{hospital}-2</td>
-                <td><span style={{ color: '#10B981' }}>Stable</span></td>
-                <td><Link to="/patient/test" style={{ color: '#60A5FA' }}>View Chart</Link></td>
-              </tr>
+              {patients.length > 0 ? patients.map((p, idx) => (
+                <tr key={p.id} style={{ borderBottom: '1px solid #374151' }}>
+                  <td style={{ padding: '10px 0', fontFamily: 'monospace' }}>{p.id}</td>
+                  <td>{p.name}</td>
+                  <td><Link to="/patients" style={{ color: '#60A5FA' }}>View Chart</Link></td>
+                </tr>
+              )) : (
+                <tr><td colSpan={3} style={{ padding: '10px 0', color: '#9CA3AF' }}>No local patients found. Database might be empty.</td></tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -6,6 +6,7 @@ import app.api.auth as auth
 import app.api.exchange as exchange
 import app.api.audit as audit
 import app.api.attestation as attestation
+import app.api.patients as patients
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -28,6 +29,7 @@ app.include_router(auth.router)
 app.include_router(exchange.router)
 app.include_router(audit.router)
 app.include_router(attestation.router)
+app.include_router(patients.router)
 
 @app.get("/", tags=["System"])
 async def root():
