@@ -1,3 +1,18 @@
+from app.exchange.request import ExchangeCreate
+
+
+def test_exchange_request_allows_missing_emergency_reason():
+    request = ExchangeCreate(
+        patient_id="patient-B-001",
+        destination_hospital="hospital-B",
+        purpose="Treatment",
+        requested_resources=["Encounter", "Observation"],
+        emergency_reason=None,
+    )
+
+    assert request.emergency_reason is None
+
+
 def test_exchange_flow_requires_auth(client):
     # Test that the endpoints exist and require authentication
     response = client.post(

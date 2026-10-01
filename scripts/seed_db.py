@@ -3,30 +3,45 @@ import json
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import text
 from app.config import settings
+from app.core.database import hospital_engines
 import sys
 
 async def init_schema():
     print("Initializing Database Schemas...")
     engine_control = create_async_engine(settings.CONTROL_DB_URL.replace("postgresql://", "postgresql+asyncpg://"))
-    engine_a = create_async_engine(settings.HOSPITAL_A_DB_URL.replace("postgresql://", "postgresql+asyncpg://"))
-    engine_b = create_async_engine(settings.HOSPITAL_B_DB_URL.replace("postgresql://", "postgresql+asyncpg://"))
 
     with open('data/schemas/control.sql', 'r') as f:
         control_sql = f.read()
     with open('data/schemas/hospital_a.sql', 'r') as f:
-        hosp_a_sql = f.read()
+        hospital_a_sql = f.read()
     with open('data/schemas/hospital_b.sql', 'r') as f:
-        hosp_b_sql = f.read()
+        hospital_b_sql = f.read()
 
     async with engine_control.begin() as conn:
         for stmt in control_sql.split(";")[:-1]: await conn.execute(text(stmt))
-    async with engine_a.begin() as conn:
-        for stmt in hosp_a_sql.split(";")[:-1]: await conn.execute(text(stmt))
-    async with engine_b.begin() as conn:
-        for stmt in hosp_b_sql.split(";")[:-1]: await conn.execute(text(stmt))
+
+    for hospital_id, engine in hospital_engines.items():
+        schema = hospital_b_sql if hospital_id == "hospital-B" else hospital_a_sql
+        async with engine.begin() as conn:
+            for stmt in schema.split(";")[:-1]: await conn.execute(text(stmt))
+
+    hospitals = [
+        ("hospital-A", "Metro General"),
+        ("hospital-B", "City Medical"),
+        ("hospital-C", "Northside Clinic"),
+        ("hospital-D", "Southbay Health"),
+        ("hospital-E", "Downtown ER"),
+        ("hospital-F", "University Hospital"),
+    ]
+    async with engine_control.begin() as conn:
+        for hospital_id, name in hospitals:
+            await conn.execute(
+                text("INSERT INTO hospitals (id, name) VALUES (:id, :name) ON CONFLICT (id) DO NOTHING"),
+                {"id": hospital_id, "name": name},
+            )
 
     print("Schemas initialized.")
-    return engine_a, engine_b, engine_control
+    return hospital_engines["hospital-A"], hospital_engines["hospital-B"], engine_control
 
 async def seed_data(engine_a, engine_b, engine_control):
     print("Loading synthetic data...")
