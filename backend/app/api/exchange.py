@@ -37,6 +37,17 @@ async def request_exchange(
 ):
     if current_user.role.value != "DOCTOR":
         raise HTTPException(status_code=403, detail="Not authorized to request exchanges")
+
+    if current_user.hospital_id is None:
+        raise HTTPException(status_code=400, detail="User is not assigned to a hospital")
+
+    try:
+        await ExchangeService.validate_source_patient_exists(current_user.hospital_id, req.patient_id)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Request cancelled: {exc}"
+        ) from exc
     
     # --- AI Anomaly Detection Engine ---
     now = time.time()

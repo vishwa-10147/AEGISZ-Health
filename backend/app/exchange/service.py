@@ -8,7 +8,20 @@ from app.exchange.transfer import SecureTransfer
 
 class ExchangeService:
     @staticmethod
+    async def validate_source_patient_exists(source_hospital: str, patient_id: str) -> None:
+        from app.core.database import hospital_sessions
+
+        if source_hospital not in hospital_sessions:
+            raise ValueError(f"Unknown source hospital: {source_hospital}")
+
+        async with hospital_sessions[source_hospital]() as source_db:
+            exists = await HospitalService.patient_exists(source_db, patient_id)
+            if not exists:
+                raise ValueError(f"Patient {patient_id} not found in source hospital database ({source_hospital})")
+
+    @staticmethod
     async def create_request(db: AsyncSession, request: ExchangeCreate, source_hospital: str, username: str = "Unknown") -> dict:
+        await ExchangeService.validate_source_patient_exists(source_hospital, request.patient_id)
         request_id = f"req-{uuid.uuid4().hex[:8]}"
         
         # Break Glass Protocol

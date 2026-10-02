@@ -19,10 +19,16 @@ const Dashboard = () => {
   const hospital = localStorage.getItem('hospital_id') || 'Global';
   const [networkHealth, setNetworkHealth] = useState<any>(null);
   const [patients, setPatients] = useState<any[]>([]);
+  const [exchangeRequests, setExchangeRequests] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch real network health
     apiClient.get('/ready').then(res => setNetworkHealth(res.data)).catch(console.error);
+
+    // Fetch real exchange data for live counters
+    apiClient.get('/exchange/')
+      .then(res => setExchangeRequests(res.data || []))
+      .catch(console.error);
 
     // Fetch real patients if Doctor
     if (role === 'DOCTOR') {
@@ -31,6 +37,14 @@ const Dashboard = () => {
         .catch(console.error);
     }
   }, [role, hospital]);
+
+  const pendingApprovals = exchangeRequests.filter(req => req.status === 'PENDING' && (
+    role.includes('ADMIN') ? true : req.destination_hospital === hospital || req.source_hospital === hospital
+  )).length;
+
+  const completedRequests = exchangeRequests.filter(req => req.status === 'APPROVED' && (
+    role.includes('ADMIN') ? true : req.destination_hospital === hospital || req.source_hospital === hospital
+  )).length;
 
   const renderAdminDashboard = () => (
     <div style={{ padding: '30px', color: 'white', maxWidth: '1200px', margin: '0 auto' }}>
@@ -55,7 +69,7 @@ const Dashboard = () => {
         {/* Action Center */}
         <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151', borderTop: '4px solid #F59E0B' }}>
           <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px', color: '#9CA3AF' }}>Action Required</h3>
-          <p style={{ margin: '5px 0', fontSize: '18px' }}>Pending Approvals: <strong style={{ color: '#F59E0B' }}>0</strong></p>
+          <p style={{ margin: '5px 0', fontSize: '18px' }}>Pending Approvals: <strong style={{ color: '#F59E0B' }}>{pendingApprovals}</strong></p>
           <p style={{ fontSize: '14px', color: '#9CA3AF', marginTop: '10px' }}>Doctors are waiting for data governance approval.</p>
           <Link to="/exchange" style={{ display: 'inline-block', marginTop: '15px', backgroundColor: '#F59E0B', color: 'black', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}>
             Review Requests
@@ -150,8 +164,8 @@ const Dashboard = () => {
 
           <div style={{ backgroundColor: '#1F2937', padding: '20px', borderRadius: '8px', border: '1px solid #374151' }}>
             <h3 style={{ borderBottom: '1px solid #374151', paddingBottom: '10px', marginBottom: '15px', color: '#9CA3AF' }}>My Requests</h3>
-            <p style={{ margin: '5px 0', fontSize: '14px' }}>Pending Approval: <strong style={{ color: '#F59E0B' }}>0</strong></p>
-            <p style={{ margin: '5px 0', fontSize: '14px' }}>Completed: <strong style={{ color: '#10B981' }}>12</strong></p>
+            <p style={{ margin: '5px 0', fontSize: '14px' }}>Pending Approval: <strong style={{ color: '#F59E0B' }}>{pendingApprovals}</strong></p>
+            <p style={{ margin: '5px 0', fontSize: '14px' }}>Completed: <strong style={{ color: '#10B981' }}>{completedRequests}</strong></p>
           </div>
         </div>
       </div>
