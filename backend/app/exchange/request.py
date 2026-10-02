@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class ExchangeCreate(BaseModel):
     patient_id: str
@@ -7,7 +7,7 @@ class ExchangeCreate(BaseModel):
     purpose: str
     requested_resources: List[str]
     is_emergency: bool = False
-    emergency_reason: str = None
+    emergency_reason: Optional[str] = None
 
 class ExchangeStatusUpdate(BaseModel):
     status: str

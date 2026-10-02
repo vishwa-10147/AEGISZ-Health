@@ -15,6 +15,22 @@ class HospitalService:
         """)
         result = await db.execute(query, {"patient_id": patient_id, "allowed_types": allowed_types})
         return [row[0] for row in result.fetchall()]
+
+    @staticmethod
+    async def patient_exists(db: AsyncSession, patient_id: str) -> bool:
+        """
+        Check whether the patient record exists in the owning hospital's local database.
+        """
+        query = text("""
+            SELECT EXISTS (
+                SELECT 1 FROM patients WHERE id = :patient_id
+            ) OR EXISTS (
+                SELECT 1 FROM fhir_resources WHERE patient_id = :patient_id
+            )
+        """)
+        result = await db.execute(query, {"patient_id": patient_id})
+        row = result.fetchone()
+        return bool(row[0]) if row else False
         
     @staticmethod
     async def get_patient(db: AsyncSession, patient_id: str) -> Dict[str, Any]:

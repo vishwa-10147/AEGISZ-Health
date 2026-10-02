@@ -66,10 +66,17 @@ const ExchangeCenter = () => {
     } catch (err: any) {
       setIsError(true);
       setIsQuantumSimulating(false);
+      const detail = err.response?.data?.detail;
+      const message = Array.isArray(detail)
+        ? detail.map((item: { msg?: string }) => item.msg).filter(Boolean).join('; ')
+        : detail || err.message;
+
       if (err.response?.status === 429) {
-        setStatus(`SECURITY ALERT: ${err.response.data.detail}`);
+        setStatus(`SECURITY ALERT: ${message}`);
+      } else if (err.response?.status === 404) {
+        setStatus(`Request cancelled: ${message}`);
       } else {
-        setStatus(`Error: ${err.response?.data?.detail || err.message}`);
+        setStatus(`Error: ${message}`);
       }
     }
   };
